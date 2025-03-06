@@ -1,0 +1,18 @@
+{
+	"type": "verify",
+	"decode": {
+		"key": "nets0@rer"
+	},
+	"receive": {
+		"byCookie": {
+			"name": "access_token"
+		},
+		"byQuery": {
+			"name": "access_token"
+		}
+	},
+	"onDeny": {
+		"code": "401",
+		"template": "deny.template.html"
+	}
+}

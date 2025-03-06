@@ -1,0 +1,31 @@
+{
+	"type": "updateIssue",
+	"encode": {
+		"expSec": "60",
+		"updateExpSec": "600",
+		"alg": "HS256",
+		"key": "nets0@rer"
+	},
+	"subject": {
+		"from": "variable"
+		"var_name": "remote_user",
+	},
+	"privateClaim": {
+		"copyFromHeader": [
+			"User-Agent"
+		]
+	},
+	"onSuccess": {
+		"set_cookie": {
+			"name": "access_token"
+			"opts": "Path=/;",
+		},
+		"content": {
+			"template": "succeeded.template.json"
+		}
+	},
+	"onError": {
+		"template": "error.template.json",
+		"code": "400"
+	},
+}

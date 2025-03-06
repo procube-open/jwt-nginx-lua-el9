@@ -1,0 +1,32 @@
+--- orig/lua-cjson.spec	2017-10-02 15:28:24.564223355 +0900
++++ luacjson/lua-cjson.spec	2017-10-02 15:29:00.628226492 +0900
+@@ -1,9 +1,10 @@
+ %define luaver 5.1
+ %define lualibdir %{_libdir}/lua/%{luaver}
+ %define luadatadir %{_datadir}/lua/%{luaver}
++%define _builddir %{_topdir}/BUILD/lua-cjson
+ 
+ Name:		lua-cjson
+-Version:	2.1devel
++Version:	2.1.0
+ Release:	1%{?dist}
+ Summary:	A fast JSON encoding/parsing module for Lua
+ 
+@@ -26,7 +27,7 @@ The Lua CJSON module provides JSON suppo
+ 
+ 
+ %prep
+-%setup -q
++#%setup -q
+ 
+ 
+ %build
+@@ -50,7 +51,7 @@ rm -rf "$RPM_BUILD_ROOT"
+ 
+ %files
+ %defattr(-,root,root,-)
+-%doc LICENSE NEWS performance.html performance.adoc manual.html manual.adoc rfc4627.txt THANKS
++%doc LICENSE NEWS performance.adoc manual.adoc rfc4627.txt THANKS
+ %{lualibdir}/*
+ %{luadatadir}/*
+ %{_bindir}/*

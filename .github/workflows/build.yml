@@ -1,0 +1,28 @@
+name: CI
+on:
+  push:
+    tags: [ '*' ]
+    branches: [ '**' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        env:
+          TRAVIS_BUILD_DIR: ${{ github.workspace }}
+        run: |
+          docker build -t procube/jwt-nginx-lua-el9 .
+          mkdir -p /tmp/RPMS/x86_64
+          sudo chown 111:111 -R /tmp/RPMS
+          docker run --rm --name jwt-nginx-lua-el9 -v /tmp/RPMS:/home/builder/rpmbuild/RPMS procube/jwt-nginx-lua-el9
+          (cd /tmp;tar czf - RPMS) > $TRAVIS_BUILD_DIR/jwt-nginx-lua-el9.tar.gz
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: jwt-nginx-lua-el9.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

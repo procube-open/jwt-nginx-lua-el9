@@ -1,0 +1,30 @@
+    server {
+        listen       80;
+        server_name  example.org;
+
+        location = /jwtIssue {
+            auth_basic "Restricted";
+            auth_basic_user_file /etc/nginx/.htpasswd;
+            set $issuerconf "jwtIssue.conf";
+            content_by_lua_file /etc/nginx/lua/jwtIssue.lua;
+        }
+        location  /restrictedService {
+            set $verifyconf "jwtVerify.conf";
+            #set $revokeList 
+            access_by_lua_file /etc/nginx/lua/jwtVerify.lua;
+            root /usr/local/openresty/nginx/html;
+        }
+        location = /restrictedService.jwtUpdate {
+            set $verifyconf "jwtVerify.conf";
+            set $issuerconf "jwtIssue.conf";
+            #set $revokeList 
+            access_by_lua_file /etc/nginx/lua/jwtUpdateVerify.lua;
+            content_by_lua_file /etc/nginx/lua/jwtIssue.lua;
+        }
+
+        location /jwt.settings/ {
+          internal;
+          root /etc/nginx;
+        }
+    }
+
