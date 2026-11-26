@@ -1,5 +1,5 @@
 %define luaver 5.1
-%define lualibdir %{_libdir}/lua/%{luaver}
+%define lualibdir /opt/procube-nginx-luajit/lib/lua/%{luaver}
 %define luadatadir %{_datadir}/lua/%{luaver}
 %define debug_package %{nil}
 %define _builddir %{_topdir}/BUILD/lua-crypto
@@ -8,7 +8,7 @@
 Name:		lua-crypto
 
 Version:	0.3.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Crypto library for Lua
 
 Group:		Development/Libraries
@@ -20,8 +20,7 @@ BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 Patch: lcrypto.config.patch
 
-BuildRequires:	lua >= %{luaver}, lua-devel >= %{luaver}, gcc
-Requires:	lua >= %{luaver}
+BuildRequires:	gcc, openssl-devel
 
 %description
 LuaCrypto provides a Lua frontend to the OpenSSL cryptographic library.
@@ -34,9 +33,9 @@ The OpenSSL features that are currently exposed are digests
 #./configure 
 #make 
 #luarocks --local install luacrypto2 --tree %{work_dir}
-luarocks unpack luacrypto2
+luarocks unpack luacrypto2 0.3.2-1
 cd luacrypto2-0.3.2-1/luacrypto
-sed -i -e 's/SHLIB_VERSION_NUMBER/OPENSSL_SHLIB_VERSION/g' src/lcrypto.c
+sed -i -e 's/SHLIB_VERSION_NUMBER/OPENSSL_VERSION_STR/g' src/lcrypto.c
 luarocks make --local --tree %{work_dir}
 
 
@@ -44,7 +43,7 @@ luarocks make --local --tree %{work_dir}
 rm -rf "$RPM_BUILD_ROOT"
 mkdir -p $RPM_BUILD_ROOT%{lualibdir}
 #install $RPM_BUILD_DIR/src/.libs/crypto.so $RPM_BUILD_ROOT%{lualibdir}/
-install -m 755 $RPM_BUILD_DIR/luacrypto2-0.3.2-1/luacrypto/%{work_dir}/lib64/lua/5.1/*.so $RPM_BUILD_ROOT%{lualibdir}/
+install -m 755 $RPM_BUILD_DIR/luacrypto2-0.3.2-1/luacrypto/%{work_dir}/lib*/lua/%{luaver}/*.so $RPM_BUILD_ROOT%{lualibdir}/
 
 
 %clean

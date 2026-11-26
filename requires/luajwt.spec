@@ -1,12 +1,12 @@
 %define luaver 5.1
 %define lualibdir %{_libdir}/lua/%{luaver}
-%define luadatadir %{_datadir}/lua/%{luaver}
+%define luadatadir /opt/procube-nginx-luajit/share/lua/%{luaver}
 %define debug_package %{nil}
 
 Name:		luajwt
 
 Version:	1.3.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 Summary:	JSON Web Tokens for Lua
 
 Group:		Development/Libraries
@@ -15,8 +15,7 @@ URL:		https://github.com/x25/luajwt
 Source0:	https://github.com/x25/luajwt/archive/master.zip
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-#BuildRequires:	lua >= %{luaver}, lua-devel >= %{luaver}, gcc
-Requires:	lua >= %{luaver}, lua-crypto >= 0.3.0, lua-cjson >= 2.1.0, lua-base64
+Requires:	lua-crypto >= 0.3.2-3, lua-cjson >= 2.1.0-2, lua-base64 >= 5.1-2
 
 %description
 JSON Web Tokens for Lua

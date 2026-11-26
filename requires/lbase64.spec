@@ -1,5 +1,6 @@
 %define luaver 5.1
-%define lualibdir %{_libdir}/lua/%{luaver}
+%define lualibdir /opt/procube-nginx-luajit/lib/lua/%{luaver}
+%define luajit_inc /opt/procube-nginx-luajit/include/luajit-2.1
 %define luadatadir %{_datadir}/lua/%{luaver}
 %define debug_package %{nil}
 
@@ -7,7 +8,7 @@ Name:		lua-base64
 
 %define short_name lbase64
 Version:	5.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	base64 library for Lua
 
 Group:		Development/Libraries
@@ -16,8 +17,7 @@ URL:		http://webserver2.tecgraf.puc-rio.br/~lhf/ftp/lua/
 Source0:	http://webserver2.tecgraf.puc-rio.br/~lhf/ftp/lua/%{version}/%{short_name}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{short_name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	lua >= %{luaver}, lua-devel >= %{luaver}, gcc
-Requires:	lua >= %{luaver}
+BuildRequires:	gcc
 
 %description
 This is a base64 library for Lua 5.1. For information on base64 see
@@ -35,7 +35,7 @@ Please send comments, suggestions, and bug reports to lhf@tecgraf.puc-rio.br .
 
 
 %build
-make %{?_smp_mflags} CFLAGS="%{optflags} -fPIC" LUABIN=/bin/
+make %{?_smp_mflags} so CFLAGS="%{optflags} -fPIC -I%{luajit_inc}"
 
 
 %install

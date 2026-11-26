@@ -1,0 +1,6 @@
+{
+  "type": "verify",
+  "decode": {"key": "test-key"},
+  "receive": {"byCookie": {"name": "access_token"}, "byQuery": {"name": "access_token"}},
+  "onDeny": {"code": "401"}
+}

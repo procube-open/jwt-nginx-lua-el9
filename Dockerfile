@@ -3,16 +3,26 @@ MAINTAINER "Shigeki Kitamura" <kitamura@procube.jp>
 RUN groupadd -g 111 builder
 RUN useradd -g builder -u 111 builder
 ENV HOME /home/builder
+ENV LUAJIT_VERSION=2.1-20261117
+ENV LUAROCKS_VERSION=3.12.2
+ENV LUAJIT_PREFIX=/opt/procube-nginx-luajit
 WORKDIR ${HOME}
 RUN dnf -y update \
     && dnf -y install epel-release \
-    && dnf -y install unzip wget sudo git rpm-build gcc make openssl-devel pcre-devel zlib-devel
-RUN mkdir -p /tmp/requires \
-    && cd /tmp/requires/ \
-    && wget --no-verbose -O /tmp/requires/lua.tar.gz https://github.com/procube-open/lua51-el9/releases/download/1.0.0/lua51-el9.tar.gz \
-    && tar xvzf lua.tar.gz \
-    && cd RPMS/x86_64/ \
-    && rpm -ivh lua-5.1.4-15.el9.x86_64.rpm lua-devel-5.1.4-15.el9.x86_64.rpm luarocks-2.3.0-1.el9.x86_64.rpm
+    && dnf -y install unzip wget git rpm-build gcc make patch tar gzip openssl-devel pcre-devel zlib-devel
+RUN cd /tmp \
+    && wget --no-verbose -O luajit2.tar.gz https://github.com/openresty/luajit2/archive/refs/tags/v${LUAJIT_VERSION}.tar.gz \
+    && tar xzf luajit2.tar.gz \
+    && make -C luajit2-${LUAJIT_VERSION} PREFIX=${LUAJIT_PREFIX} \
+    && make -C luajit2-${LUAJIT_VERSION} PREFIX=${LUAJIT_PREFIX} install \
+    && wget --no-verbose -O luarocks.tar.gz https://luarocks.org/releases/luarocks-${LUAROCKS_VERSION}.tar.gz \
+    && tar xzf luarocks.tar.gz \
+    && cd luarocks-${LUAROCKS_VERSION} \
+    && ./configure --with-lua=${LUAJIT_PREFIX} --with-lua-include=${LUAJIT_PREFIX}/include/luajit-2.1 --with-lua-interpreter=luajit \
+    && make \
+    && make install
+ENV PATH=${LUAJIT_PREFIX}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${LUAJIT_PREFIX}/lib
 RUN mkdir -p /tmp/buffer
 COPY requires/*.spec /tmp/buffer/
 COPY jwt-nginx-lua.spec /tmp/buffer/
@@ -33,7 +43,6 @@ RUN git clone https://github.com/msva/lua-htmlparser.git rpmbuild/SOURCES/lua-ht
 RUN git clone https://github.com/bungle/lua-resty-template.git rpmbuild/SOURCES/lua-resty-template
 RUN git clone https://github.com/bungle/lua-resty-string.git rpmbuild/SOURCES/lua-resty-string
 RUN git clone https://github.com/starius/luacrypto.git rpmbuild/BUILD/lua-crypto
-RUN git clone https://github.com/facebookarchive/luaffifb.git rpmbuild/BUILD/luaffi
 RUN wget -O rpmbuild/SOURCES/lbase64.tar.gz http://webserver2.tecgraf.puc-rio.br/~lhf/ftp/lua/5.1/lbase64.tar.gz
 RUN git clone https://github.com/rrthomas/lrexlib.git rpmbuild/BUILD/lrexlib
 RUN cp rpmbuild/BUILD/lua-cjson/lua-cjson.spec rpmbuild/SPECS/
@@ -42,8 +51,7 @@ RUN cd rpmbuild/SPECS \
 
 RUN mkdir -p ${HOME}/rpmbuild/SOURCES/jwt-nginx-lua
 RUN cp -R /tmp/buffer/* ${HOME}/rpmbuild/SOURCES/jwt-nginx-lua/
-CMD ["/usr/bin/rpmbuild","-bb","rpmbuild/SPECS/lua-ffi.spec", \
-                               "rpmbuild/SPECS/lua-cjson.spec", \
+CMD ["/usr/bin/rpmbuild","-bb","rpmbuild/SPECS/lua-cjson.spec", \
                                "rpmbuild/SPECS/lua-htmlparser.spec", \
                                "rpmbuild/SPECS/lua-resty-template.spec", \
                                "rpmbuild/SPECS/lua-resty-string.spec", \

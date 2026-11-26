@@ -1,32 +1,34 @@
---- orig/lua-cjson.spec	2017-10-02 15:28:24.564223355 +0900
-+++ luacjson/lua-cjson.spec	2017-10-02 15:29:00.628226492 +0900
-@@ -1,9 +1,10 @@
- %define luaver 5.1
- %define lualibdir %{_libdir}/lua/%{luaver}
- %define luadatadir %{_datadir}/lua/%{luaver}
+--- orig/lua-cjson.spec
++++ luacjson/lua-cjson.spec
+@@ -2,2 +2,5 @@
+-%define lualibdir %{_libdir}/lua/%{luaver}
+-%define luadatadir %{_datadir}/lua/%{luaver}
++%define lualibdir /opt/procube-nginx-luajit/lib/lua/%{luaver}
++%define luadatadir /opt/procube-nginx-luajit/share/lua/%{luaver}
++%define luajit_inc /opt/procube-nginx-luajit/include/luajit-2.1
 +%define _builddir %{_topdir}/BUILD/lua-cjson
- 
- Name:		lua-cjson
++%define debug_package %{nil}
+@@ -6,2 +9,2 @@
 -Version:	2.1devel
+-Release:	1%{?dist}
 +Version:	2.1.0
- Release:	1%{?dist}
- Summary:	A fast JSON encoding/parsing module for Lua
- 
-@@ -26,7 +27,7 @@ The Lua CJSON module provides JSON suppo
- 
- 
- %prep
++Release:	2%{?dist}
+@@ -16,2 +19 @@
+-BuildRequires:	lua >= %{luaver}, lua-devel >= %{luaver}
+-Requires:	lua >= %{luaver}
++BuildRequires:	gcc
+@@ -29 +31 @@
 -%setup -q
-+#%setup -q
- 
- 
- %build
-@@ -50,7 +51,7 @@ rm -rf "$RPM_BUILD_ROOT"
- 
- %files
- %defattr(-,root,root,-)
++# Source is cloned into the build directory.
+@@ -33 +35,2 @@
+-make %{?_smp_mflags} CFLAGS="%{optflags}" LUA_INCLUDE_DIR="%{_includedir}"
++sed -i 's@^#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502$@#if !defined(LUA_VERSION_NUM) || (LUA_VERSION_NUM < 502 \&\& !defined(luaL_newlib))@' lua_cjson.c
++make %{?_smp_mflags} CFLAGS="%{optflags}" LUA_INCLUDE_DIR="%{luajit_inc}"
+@@ -40,0 +44,2 @@
++rm -rf "$RPM_BUILD_ROOT%{_bindir}"
++rm -rf "$RPM_BUILD_ROOT%{luadatadir}/cjson/tests"
+@@ -53 +58 @@
 -%doc LICENSE NEWS performance.html performance.adoc manual.html manual.adoc rfc4627.txt THANKS
 +%doc LICENSE NEWS performance.adoc manual.adoc rfc4627.txt THANKS
- %{lualibdir}/*
- %{luadatadir}/*
- %{_bindir}/*
+@@ -56 +60,0 @@
+-%{_bindir}/*

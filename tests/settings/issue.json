@@ -1,0 +1,10 @@
+{
+  "type": "issue",
+  "encode": {"alg": "HS256", "key": "test-key", "expSec": "60"},
+  "subject": {"from": "header", "var_name": "x-test-user"},
+  "onSuccess": {
+    "set_cookie": {"name": "access_token"},
+    "content": {"code": "200", "template": "success.json"}
+  },
+  "onError": {"code": "400", "template": "error.json"}
+}

@@ -1,12 +1,12 @@
 %define luaver 5.1
 %define lualibdir %{_libdir}/lua/%{luaver}
-%define luadatadir %{_datadir}/lua/%{luaver}
+%define luadatadir /opt/procube-nginx-luajit/share/lua/%{luaver}
 %define debug_package %{nil}
 
 Name:		lua-resty-template
 
 Version:	1.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Templating Engine (HTML) for Lua and OpenResty
 
 Group:		Development/Libraries
@@ -15,7 +15,6 @@ URL:		https://github.com/bungle/lua-resty-template
 Source0:	https://github.com/bungle/lua-resty-template/archive/lua-resty-template-master.zip
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-Requires:	lua >= %{luaver}
 
 %description
 lua-resty-template is a compiling (1) (HTML) templating engine for Lua and OpenResty.

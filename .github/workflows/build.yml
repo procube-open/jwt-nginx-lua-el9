@@ -18,6 +18,8 @@ jobs:
           mkdir -p /tmp/RPMS/x86_64
           sudo chown 111:111 -R /tmp/RPMS
           docker run --rm --name jwt-nginx-lua-el9 -v /tmp/RPMS:/home/builder/rpmbuild/RPMS procube/jwt-nginx-lua-el9
+          docker run --rm -v /tmp/RPMS:/rpms:ro -v "$TRAVIS_BUILD_DIR/tests:/tests:ro" almalinux/9-base bash /tests/run.sh
+          docker run --rm -e TEST_UPGRADE=1 -v /tmp/RPMS:/rpms:ro -v "$TRAVIS_BUILD_DIR/tests:/tests:ro" almalinux/9-base bash /tests/run.sh
           (cd /tmp;tar czf - RPMS) > $TRAVIS_BUILD_DIR/jwt-nginx-lua-el9.tar.gz
       - name: Release
         uses: softprops/action-gh-release@v1
